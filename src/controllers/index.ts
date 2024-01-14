@@ -37,6 +37,8 @@ controller.addPlayer = async (req: Request, res: Response, next) => {
     const games: any = await Game.findAll()
     const players: any = await Player.findAll()
 
+    const { name, surname, birthdate } = req.body
+
 
     // const newGame = await Game.create({
     //     title: `${randomGamblingGames[Math.floor(Math.random() * randomGamblingGames.length)]} ${randomSportsNames[Math.floor(Math.random() * randomSportsNames.length)]} ${Math.floor(Math.random() * 100)}`,
@@ -46,9 +48,9 @@ controller.addPlayer = async (req: Request, res: Response, next) => {
     // games.push(newGame)
 
     const newPlayer = await Player.create({
-        name: 'John',
-        surname: 'Doe',
-        birthdate: new Date(),
+        name,
+        surname,
+        birthdate,
         game_id: games[Math.floor(Math.random() * games.length)].id,
     });
 

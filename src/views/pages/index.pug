@@ -1,16 +1,25 @@
 html
     head
         title= title
+        script(defer=true src='/javascripts/search-mechanism.js')
     body
 
+        h2 Dodaj Igro
         form(method='POST' action='/game')
             input(type='text' name='title' placeholder='title')
             input(type='text' name='description' placeholder='description')
             input(type='submit' value='Add Game')
         br
         br
+
+        h1 Dodaj igralca
+
         form(method='POST' action='/player')
             input(type='text' name='name' placeholder='name')
             input(type='text' name='surname' placeholder='surname')
             input(type='date' name='birthdate' placeholder='birthdate')
             input(type='submit' value='Add Player')
+
+
+        h2 Isci
+        input(id='search' type='text' name='search' placeholder='isci')
