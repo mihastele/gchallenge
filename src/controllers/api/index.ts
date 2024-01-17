@@ -3,10 +3,10 @@ import {Game, Player} from "../../db/dbinit";
 import {ApiRoutes} from "../../routes/api/routingSignature";
 import NodeCache from "node-cache";
 
-const myCache = new NodeCache();
+export const myCache = new NodeCache();
 const controller: ApiRoutes = {};
 
-function deleteCache(startsW: string) {
+export function deleteCache(startsW: string) {
     const allKeys = myCache.keys();
     const gameListKeys = allKeys.filter(key => key.startsWith(startsW));
     gameListKeys.forEach(key => {
@@ -60,7 +60,7 @@ controller.updatePlayer = async (req: Request, res: Response, next) => {
 
     await player.save();
     deleteCache("playersList");
-    return res.status(200).json({player})
+    return res.status(202).json({player})
 }
 
 controller.removePlayer = async (req: Request, res: Response, next) => {
@@ -73,7 +73,7 @@ controller.removePlayer = async (req: Request, res: Response, next) => {
 
     await player.destroy();
     deleteCache("playersList");
-    return res.status(200).json({player});
+    return res.status(204).json({player});
 }
 
 controller.addPlayer = async (req: Request, res: Response, next) => {
@@ -89,7 +89,7 @@ controller.addPlayer = async (req: Request, res: Response, next) => {
 
     await newPlayer.save();
     deleteCache("playersList");
-    return res.status(200).json({
+    return res.status(201).json({
         newPlayer,
     });
 }
@@ -136,7 +136,7 @@ controller.updateGame = async (req: Request, res: Response, next) => {
 
     await game.save();
     deleteCache("gamesList");
-    return res.status(200).json({game});
+    return res.status(202).json({game});
 }
 
 controller.removeGame = async (req: Request, res: Response, next) => {
@@ -149,7 +149,7 @@ controller.removeGame = async (req: Request, res: Response, next) => {
 
     await game.destroy();
     deleteCache("gamesList");
-    return res.status(200).json({game});
+    return res.status(204).json({game});
 }
 
 controller.addGame = async (req: Request, res: Response, next) => {
@@ -162,7 +162,7 @@ controller.addGame = async (req: Request, res: Response, next) => {
 
     await newGame.save();
     deleteCache("gamesList");
-    return res.status(200).json({newGame});
+    return res.status(201).json({newGame});
 }
 
 

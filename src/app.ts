@@ -33,3 +33,5 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 app.listen(port, () => {
     console.log(`Gamanza Challenge app listening on port ${port}`);
 })
+
+export default app;
