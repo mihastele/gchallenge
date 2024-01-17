@@ -1,25 +1,72 @@
-html
-    head
-        title= title
-        script(defer=true src='/javascripts/search-mechanism.js')
-    body
+include ../layout
 
-        h2 Dodaj Igro
-        form(method='POST' action='/game')
-            input(type='text' name='title' placeholder='title')
-            input(type='text' name='description' placeholder='description')
-            input(type='submit' value='Add Game')
-        br
-        br
+block content
 
-        h1 Dodaj igralca
+    h2 Dodaj Igro
+    form(method='POST' action='/game')
+        input(type='text' name='title' placeholder='title')
+        input(type='text' name='description' placeholder='description')
+        input(type='submit' value='Add Game')
+    br
+    br
 
-        form(method='POST' action='/player')
-            input(type='text' name='name' placeholder='name')
-            input(type='text' name='surname' placeholder='surname')
-            input(type='date' name='birthdate' placeholder='birthdate')
-            input(type='submit' value='Add Player')
+    h2 Dodaj igralca
+
+    form(method='POST' action='/player')
+        input(type='text' name='name' placeholder='name')
+        input(type='text' name='surname' placeholder='surname')
+        input(type='date' name='birthdate' placeholder='birthdate')
+        input(type='submit' value='Add Player')
+
+    h2 Igre
+
+    table.table
+        thead
+            tr
+                th(scope='col') Id
+                th(scope='col') Naslov
+                th(scope='col') Opis
+                th(scope='col') Akcije
+        tbody
+            each game in games
+                tr
+                    td= game.id
+                    td= game.title
+                    td= game.description
+                    td
+                        form(method='POST' action='/game/' + game.id + '?_method=DELETE')
+                            input(type='submit' value='Izbriši igro')
+                        button(id=`btng${game.id}` onclick='') Uredi igro
+                        form(method='POST' action='/game/' + game.id + '?_method=PUT')
+                            input(type='text' name='title' placeholder='title')
+                            input(type='text' name='description' placeholder='description')
+                            input(type='submit' value='Uredi')
+
+    h2 Igralci
+
+    table.table
+        each player in players
+            th
+                th(scope='col') Id
+                th(scope='col') Ime
+                th(scope='col') Priimek
+                th(scope='col') Datum rojstva
+            tr
+                td= player.id
+                td= player.name
+                td= player.surname
+                td= player.birthdate
+                td
+                    form(method='POST' action='/player/' + player.id + '?_method=DELETE')
+                        input(type='submit' value='Izbriši igralca')
+                    button(id=`btnp${player.id}`) Uredi igralca
+                    form(method='POST' action='/player/' + player.id + '?_method=PUT')
+                        input(type='text' name='name' placeholder='name')
+                        input(type='text' name='surname' placeholder='surname')
+                        input(type='date' name='birthdate' placeholder='birthdate')
+                        input(type='submit' value='Uredi igralca')
 
 
-        h2 Isci
-        input(id='search' type='text' name='search' placeholder='isci')
+    h2 Isci
+    input(id='search-input' type='text' name='search' placeholder='isci')
+    button(id='search-button' type='button') Isci

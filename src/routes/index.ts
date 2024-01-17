@@ -1,9 +1,9 @@
-const indexController = require('../controllers/index');
+const indexController = require('../controllers');
 const router = require('express').Router();
+const apiRouter = require('./api');
 
 router.get('/', indexController.home);
 
-router.post('/player', indexController.addPlayer);
-router.post('/game', indexController.addGame);
+router.use('/api', apiRouter);
 
 module.exports = router;
