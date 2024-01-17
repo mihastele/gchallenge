@@ -4,17 +4,32 @@ import {ApiRoutes} from "../../routes/api/routingSignature";
 import NodeCache from "node-cache";
 
 const myCache = new NodeCache();
-const playerCacheKey = "defaulyplayersList";
 const controller: ApiRoutes = {};
 
+function deleteCache(startsW: string) {
+    const allKeys = myCache.keys();
+    const gameListKeys = allKeys.filter(key => key.startsWith(startsW));
+    gameListKeys.forEach(key => {
+        myCache.del(key)
+        console.log(`Deleted key: ${key}`)
+    });
+    // gameListKeys.forEach(key => myCache.del(key));
+}
+
+
 controller.listPlayers = async (req: Request, res: Response, next) => {
-    const cacheContent = myCache.get(playerCacheKey);
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const offset = (page - 1) * limit;
+
+    const cacheKey = `playersList_page_${page}_limit_${limit}`;
+    const cacheContent = myCache.get(cacheKey);
 
     if (cacheContent) {
         return res.status(200).json({players: cacheContent});
     } else {
-        const players: any = await Player.findAll();
-        myCache.set(playerCacheKey, players);
+        const players: any = await Player.findAll({limit, offset});
+        myCache.set(cacheKey, players);
         return res.status(200).json({players});
     }
 }
@@ -44,7 +59,7 @@ controller.updatePlayer = async (req: Request, res: Response, next) => {
     player.birthdate = birthdate || player.birthdate;
 
     await player.save();
-    myCache.del(playerCacheKey);
+    deleteCache("playersList");
     return res.status(200).json({player})
 }
 
@@ -57,7 +72,7 @@ controller.removePlayer = async (req: Request, res: Response, next) => {
     });
 
     await player.destroy();
-    myCache.del(playerCacheKey);
+    deleteCache("playersList");
     return res.status(200).json({player});
 }
 
@@ -73,24 +88,25 @@ controller.addPlayer = async (req: Request, res: Response, next) => {
 
 
     await newPlayer.save();
-    myCache.del(playerCacheKey);
+    deleteCache("playersList");
     return res.status(200).json({
         newPlayer,
     });
 }
 
-
-const gameCacheKey = "defaulygamesList";
-
-
 controller.listGames = async (req: Request, res: Response, next) => {
-    const cacheContent = myCache.get(gameCacheKey);
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const offset = (page - 1) * limit;
+
+    const cacheKey = `gamesList_page_${page}_limit_${limit}`;
+    const cacheContent = myCache.get(cacheKey);
 
     if (cacheContent) {
-        return res.status(200).json({players: cacheContent});
+        return res.status(200).json({games: cacheContent});
     } else {
-        const games: any = await Game.findAll();
-        myCache.set(gameCacheKey, games);
+        const games: any = await Game.findAll({limit, offset});
+        myCache.set(cacheKey, games);
         return res.status(200).json({games});
     }
 }
@@ -119,7 +135,7 @@ controller.updateGame = async (req: Request, res: Response, next) => {
     game.description = description || game.description;
 
     await game.save();
-    myCache.del(gameCacheKey);
+    deleteCache("gamesList");
     return res.status(200).json({game});
 }
 
@@ -132,7 +148,7 @@ controller.removeGame = async (req: Request, res: Response, next) => {
     });
 
     await game.destroy();
-    myCache.del(gameCacheKey);
+    deleteCache("gamesList");
     return res.status(200).json({game});
 }
 
@@ -145,7 +161,7 @@ controller.addGame = async (req: Request, res: Response, next) => {
     });
 
     await newGame.save();
-    myCache.del(gameCacheKey);
+    deleteCache("gamesList");
     return res.status(200).json({newGame});
 }
 
