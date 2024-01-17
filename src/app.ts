@@ -4,9 +4,15 @@ import 'express-async-errors';
 import express from "express";
 import { CountApiManager} from "./utils/requestCountManager";
 
+const swaggerDocs = require('../swagger');
+
+
+
 const app = express();
 const port = 3000;
 const indexRouter = require('./routes');
+
+swaggerDocs(app);
 
 CountApiManager.readFile();
 CountApiManager.setSaveInterval(10000);
