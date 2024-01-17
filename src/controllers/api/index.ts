@@ -3,29 +3,24 @@ import {Game, Player} from "../../db/dbinit";
 import {ApiRoutes} from "../../routes/api/routingSignature";
 import NodeCache from "node-cache";
 
-
 const myCache = new NodeCache();
-const cacheKey = "defaulyplayersList";
-
+const playerCacheKey = "defaulyplayersList";
 const controller: ApiRoutes = {};
 
 controller.listPlayers = async (req: Request, res: Response, next) => {
-
-
-    const cacheContent = myCache.get(cacheKey);
+    const cacheContent = myCache.get(playerCacheKey);
 
     if (cacheContent) {
         return res.status(200).json({players: cacheContent});
     } else {
         const players: any = await Player.findAll();
-        myCache.set(cacheKey, players);
+        myCache.set(playerCacheKey, players);
         return res.status(200).json({players});
     }
 }
 
 controller.getPlayer = async (req: Request, res: Response, next) => {
     const {id} = req.params;
-
     const player: any = await Player.findOne({
         where: {
             id
@@ -37,9 +32,7 @@ controller.getPlayer = async (req: Request, res: Response, next) => {
 
 controller.updatePlayer = async (req: Request, res: Response, next) => {
     const {id} = req.params;
-
     const {name, surname, birthdate} = req.body;
-
     const player: any = await Player.findOne({
         where: {
             id
@@ -51,15 +44,12 @@ controller.updatePlayer = async (req: Request, res: Response, next) => {
     player.birthdate = birthdate || player.birthdate;
 
     await player.save();
-
-    myCache.del(cacheKey);
-
+    myCache.del(playerCacheKey);
     return res.status(200).json({player})
 }
 
 controller.removePlayer = async (req: Request, res: Response, next) => {
     const {id} = req.params;
-
     const player: any = await Player.findOne({
         where: {
             id
@@ -67,24 +57,13 @@ controller.removePlayer = async (req: Request, res: Response, next) => {
     });
 
     await player.destroy();
-
+    myCache.del(playerCacheKey);
     return res.status(200).json({player});
 }
 
 controller.addPlayer = async (req: Request, res: Response, next) => {
     const games: any = await Game.findAll();
-    // const players: any = await Player.findAll()
-
     const {name, surname, birthdate} = req.body;
-
-
-    // const newGame = await Game.create({
-    //     title: `${randomGamblingGames[Math.floor(Math.random() * randomGamblingGames.length)]} ${randomSportsNames[Math.floor(Math.random() * randomSportsNames.length)]} ${Math.floor(Math.random() * 100)}`,
-    //     description: 'Super duper fun game',
-    // });
-    //
-    // games.push(newGame)
-
     const newPlayer = await Player.create({
         name,
         surname,
@@ -92,28 +71,32 @@ controller.addPlayer = async (req: Request, res: Response, next) => {
         game_id: games[Math.floor(Math.random() * games.length)].id,
     });
 
-    // players.push(newPlayer);
 
     await newPlayer.save();
-
-    // console.log(games)
-    // console.log(players);
-
+    myCache.del(playerCacheKey);
     return res.status(200).json({
         newPlayer,
     });
 }
 
 
-controller.listGames = async (req: Request, res: Response, next) => {
-    const games: any = await Game.findAll();
+const gameCacheKey = "defaulygamesList";
 
-    return res.status(200).json({games});
+
+controller.listGames = async (req: Request, res: Response, next) => {
+    const cacheContent = myCache.get(gameCacheKey);
+
+    if (cacheContent) {
+        return res.status(200).json({players: cacheContent});
+    } else {
+        const games: any = await Game.findAll();
+        myCache.set(gameCacheKey, games);
+        return res.status(200).json({games});
+    }
 }
 
 controller.getGame = async (req: Request, res: Response, next) => {
     const {id} = req.params;
-
     const game: any = await Game.findOne({
         where: {
             id
@@ -125,9 +108,7 @@ controller.getGame = async (req: Request, res: Response, next) => {
 
 controller.updateGame = async (req: Request, res: Response, next) => {
     const {id} = req.params;
-
     const {title, description} = req.body;
-
     const game: any = await Game.findOne({
         where: {
             id
@@ -138,13 +119,12 @@ controller.updateGame = async (req: Request, res: Response, next) => {
     game.description = description || game.description;
 
     await game.save();
-
+    myCache.del(gameCacheKey);
     return res.status(200).json({game});
 }
 
 controller.removeGame = async (req: Request, res: Response, next) => {
     const {id} = req.params;
-
     const game: any = await Game.findOne({
         where: {
             id
@@ -152,24 +132,20 @@ controller.removeGame = async (req: Request, res: Response, next) => {
     });
 
     await game.destroy();
-
+    myCache.del(gameCacheKey);
     return res.status(200).json({game});
 }
 
 controller.addGame = async (req: Request, res: Response, next) => {
-
-
     console.log(`Request body: ${JSON.stringify(req.body)}`);
-
     const {title, description} = req.body;
-
     const newGame = await Game.create({
         title,
         description,
     });
 
     await newGame.save();
-
+    myCache.del(gameCacheKey);
     return res.status(200).json({newGame});
 }
 
