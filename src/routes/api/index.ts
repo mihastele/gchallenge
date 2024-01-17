@@ -14,24 +14,6 @@ apiRouiter.use(apiController.countIncrement)
  */
 
 
-/**
- * @swagger
- * /api/players:
- *  get:
- *    tags: [Players]
- *    description: Get all players
- *    responses:
- *      '200':
- *      description: A successful response
- *      content:
- *          application/json:
- *      schema:
- *          type: array
- *          items:
- *              $ref: '#/components/schemas/Player'
- */
-apiRouiter.get('/players', apiController.listPlayers);
-
 
 /**
  * @swagger
@@ -128,10 +110,40 @@ apiRouiter.post('/player', apiController.addPlayer);
 
 /**
  * @swagger
+ * /api/players:
+ *  get:
+ *    tags: [Players]
+ *    description: Get all players
+ *    parameters:
+ *      - in: query
+ *        name: search
+ *        schema:
+ *          type: string
+ *        description: Search term
+ *    responses:
+ *      '200':
+ *      description: A successful response
+ *      content:
+ *          application/json:
+ *      schema:
+ *          type: array
+ *          items:
+ *              $ref: '#/components/schemas/Player'
+ */
+apiRouiter.get('/players', apiController.listPlayers);
+
+/**
+ * @swagger
  * /api/games:
  *   get:
  *     tags: [Games]
  *     summary: Get all games
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term
  *     responses:
  *       200:
  *         description: The list of games was successfully retrieved
@@ -143,6 +155,7 @@ apiRouiter.post('/player', apiController.addPlayer);
  *                 $ref: '#/components/schemas/Game'
  */
 apiRouiter.get('/games', apiController.listGames);
+
 
 /**
  * @swagger

@@ -3,6 +3,7 @@ import {Game, Player} from "../../db/dbinit";
 import {ApiRoutes} from "../../routes/api/routingSignature";
 import NodeCache from "node-cache";
 import {CountApiManager} from "../../utils/requestCountManager";
+import {Op} from "sequelize";
 
 export const myCache = new NodeCache();
 const controller: ApiRoutes = {};
@@ -27,6 +28,23 @@ controller.listPlayers = async (req: Request, res: Response, next) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const offset = (page - 1) * limit;
+
+
+    // due to simplicity, I will not cache search queries
+    const search = req.query.search as string;
+    if (search) {
+        const players: any = await Player.findAll({
+            where: {
+                [Op.or]: [
+                    { name: { [Op.like]: `%${search}%` } },
+                    { surname: { [Op.like]: `%${search}%` } }
+                ]
+            },
+            limit,
+            offset
+        });
+        return res.status(200).json({players});
+    }
 
     const cacheKey = `playersList_page_${page}_limit_${limit}`;
     const cacheContent = myCache.get(cacheKey);
@@ -104,6 +122,21 @@ controller.listGames = async (req: Request, res: Response, next) => {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
     const offset = (page - 1) * limit;
+
+    // due to simplicity, I will not cache search queries
+    const search = req.query.search as string;
+    if (search) {
+        const games: any = await Game.findAll({
+            where: {
+                title: {
+                    [Op.like]: `%${search}%`
+                }
+            },
+            limit,
+            offset
+        });
+        return res.status(200).json({games});
+    }
 
     const cacheKey = `gamesList_page_${page}_limit_${limit}`;
     const cacheContent = myCache.get(cacheKey);
