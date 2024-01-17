@@ -1,6 +1,7 @@
 import {Request, Response} from "express";
 
 export interface ApiRoutes  {
+    countIncrement?: (req: Request, res: Response, next: any) => void,
     addPlayer?: (req: Request, res: Response, next: any) => void,
     updatePlayer?: (req: Request, res: Response, next: any) => void,
     removePlayer?: (req: Request, res: Response, next: any) => void,

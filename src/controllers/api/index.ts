@@ -2,6 +2,7 @@ import {Request, Response} from "express";
 import {Game, Player} from "../../db/dbinit";
 import {ApiRoutes} from "../../routes/api/routingSignature";
 import NodeCache from "node-cache";
+import {CountApiManager} from "../../utils/requestCountManager";
 
 export const myCache = new NodeCache();
 const controller: ApiRoutes = {};
@@ -14,6 +15,11 @@ export function deleteCache(startsW: string) {
         console.log(`Deleted key: ${key}`)
     });
     // gameListKeys.forEach(key => myCache.del(key));
+}
+
+controller.countIncrement = async (req: Request, res: Response, next) => {
+    CountApiManager.increment();
+    next();
 }
 
 

@@ -1,6 +1,8 @@
 const apiController = require('../../controllers/api');
 const apiRouiter = require('express').Router();
 
+apiRouiter.use(apiController.countIncrement)
+
 apiRouiter.get('/players', apiController.listPlayers);
 apiRouiter.get('/player/:id', apiController.getPlayer);
 apiRouiter.put('/player/:id', apiController.updatePlayer);

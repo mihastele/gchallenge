@@ -1,14 +1,15 @@
 import path from "node:path";
 import bodyParser from 'body-parser';
 import 'express-async-errors';
-
 import express from "express";
+import { CountApiManager} from "./utils/requestCountManager";
 
 const app = express();
 const port = 3000;
 const indexRouter = require('./routes');
 
-
+CountApiManager.readFile();
+CountApiManager.setSaveInterval(10000);
 
 app.use('/', express.static(path.join(__dirname, './public')));
 
